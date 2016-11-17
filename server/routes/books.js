@@ -37,9 +37,9 @@ router.get('/:genre', function (req, res) {
       console.log('connection error: ', err);
       res.sendStatus(500);
     }
-    client.query('SELECT * FROM books WHERE genre='+genre1+';', [genre], function(err, result) {
+    client.query('SELECT * FROM books WHERE genre=$1;', [genre1], function(err, result) {
       done(); // close the connection.
-console.log(result);
+      console.log(result);
       // console.log('the client!:', client);
 
       if(err) {
