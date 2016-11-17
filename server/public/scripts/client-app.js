@@ -7,6 +7,8 @@ $(document).ready(function () {
     $("#book-list").on('click', '.delete', deleteBook);
     // update a book
     $("#book-list").on('click', '.update', updateBook);
+
+    $("#genre-submit").on('click', selectGenre);
 });
 /**
  * Retrieve books from server and append to DOM
@@ -24,6 +26,23 @@ function getBooks() {
 
   })
 }
+
+function selectGenre() {
+  event.preventDefault();
+  var genre = $('#genreSelector').val();
+  console.log(genre);
+  $.ajax({
+    type: 'GET',
+    url: '/books/' + genre,
+    success: function(theGenre) {
+      appendBooks(theGenre);
+    },
+    error: function(result) {
+      console.log('could not select a genre.');
+    }
+  });
+}
+
 /**
  * Add a new book to the database and refresh the DOM
  */
@@ -105,7 +124,7 @@ function appendBooks(books) {
     $el = $('#book-list').children().last();
     var book = books[i];
     $el.data('id', book.id);
-    console.log("Date from DB: ", book.published);
+    //console.log("Date from DB: ", book.published);
 
     // convert the date
     // book.date = new Date(book.published);
@@ -117,7 +136,7 @@ function appendBooks(books) {
     // console.log(convertedDate);
 
     var convertedDate = book.published.substr(0, 10);
-    console.log(convertedDate);
+    //console.log(convertedDate);
 
     $el.append('<input type="text" name="title" value="' + book.title + '" />');
     $el.append('<input type="text" name="author" value="' + book.author + '" />');
@@ -130,5 +149,6 @@ function appendBooks(books) {
 
     $el.append('<button class="update">Update</button>');
     $el.append('<button class="delete">Delete</button>');
+
   }
 }

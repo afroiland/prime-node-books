@@ -28,6 +28,32 @@ router.get('/', function(req, res) {
   });
 });
 
+router.get('/:genre', function (req, res) {
+  var genre1 = req.params.genre;
+  console.log("genre1: ", genre1);
+  console.log('get genre request');
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log('connection error: ', err);
+      res.sendStatus(500);
+    }
+    client.query('SELECT * FROM books WHERE genre='+genre1+';', [genre], function(err, result) {
+      done(); // close the connection.
+console.log(result);
+      // console.log('the client!:', client);
+
+      if(err) {
+        console.log('select query error: ', err);
+        res.sendStatus(500);
+      }
+      res.send(result.rows);
+
+    });
+
+  });
+});
+
+
 router.post('/', function(req, res) {
   var newBook = req.body;
   pg.connect(connectionString, function(err, client, done) {
@@ -37,9 +63,10 @@ router.post('/', function(req, res) {
     }
 
     client.query(
-      'INSERT INTO books (title, author, published, genre, edition, publisher) ' +
+      'INSERT INTO books (title, author, published, edition, publisher, genre) ' +
       'VALUES ($1, $2, $3, $4, $5, $6)',
-      [newBook.title, newBook.author, newBook.published, newBook.genre, newBook.edition, newBook.publisher],
+      [newBook.title, newBook.author, newBook.published, newBook.edition,
+      newBook.publisher, newBook.genre],
       function(err, result) {
         done();
 
